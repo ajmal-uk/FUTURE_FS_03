@@ -201,6 +201,46 @@
     color: var(--color-text-main);
 }
 
+
 .theme-option.active .theme-option-label {
     color: var(--color-primary);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .settings-page {
+        padding-bottom: 80px;
+        /* Space for mobile nav */
+    }
+
+    .settings-content {
+        padding: var(--spacing-md);
+        max-width: 100%;
+    }
+
+    .profile-card {
+        padding: var(--spacing-md);
+    }
+
+    .profile-actions {
+        flex-direction: column;
+    }
+
+    .profile-actions button {
+        width: 100%;
+    }
+
+    .theme-options {
+        flex-direction: column;
+    }
+
+    .theme-option {
+        flex-direction: row;
+        justify-content: flex-start;
+        padding: var(--spacing-md);
+    }
+
+    .theme-option-icon {
+        font-size: 20px;
+    }
 }

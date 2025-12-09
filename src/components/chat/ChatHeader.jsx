@@ -1,8 +1,8 @@
-// Chat Header Component
+// Chat Header Component with Encryption Indicator
 import { useNavigate } from "react-router-dom";
 import { useCall } from "../../context/CallContext";
 import { Avatar } from "../common";
-import { IconChevronLeft, IconPhone, IconVideo } from "../common/Icons";
+import { IconChevronLeft, IconPhone, IconVideo, IconLock } from "../common/Icons";
 import "./ChatHeader.css";
 
 const ChatHeader = ({ chat, otherUser, typingUsers, onBack }) => {
@@ -101,6 +101,11 @@ const ChatHeader = ({ chat, otherUser, typingUsers, onBack }) => {
                 </div>
             </div>
 
+            {/* Encryption indicator */}
+            <div className="encryption-badge" title="End-to-end encrypted">
+                <IconLock size={14} />
+            </div>
+
             <div className="chat-header-actions">
                 {!chat.isGroup && (
                     <>
@@ -126,4 +131,3 @@ const ChatHeader = ({ chat, otherUser, typingUsers, onBack }) => {
 };
 
 export default ChatHeader;
-

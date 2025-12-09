@@ -1,6 +1,3 @@
-// Cloudinary Upload Service
-// Uses unsigned uploads with upload presets (no API secret exposed)
-
 const CLOUD_NAME = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME;
 
 const UPLOAD_PRESETS = {
@@ -88,13 +85,10 @@ export const uploadAudio = async (file) => {
         file,
         UPLOAD_PRESETS.audio,
         "zychat/audio",
-        "video" // Cloudinary uses video endpoint for audio
+        "video"
     );
 };
 
-/**
- * Upload general file
- */
 export const uploadFile = async (file) => {
     return uploadToCloudinary(
         file,

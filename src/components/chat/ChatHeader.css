@@ -61,3 +61,21 @@
 .chat-header-actions .btn {
     font-size: 18px;
 }
+
+/* Encryption Badge */
+.encryption-badge {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    background: var(--color-success-soft);
+    border-radius: var(--radius-full);
+    color: var(--color-success);
+    cursor: help;
+    flex-shrink: 0;
+}
+
+.encryption-badge svg {
+    stroke: var(--color-success);
+}

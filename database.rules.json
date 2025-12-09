@@ -1,0 +1,82 @@
+{
+    "rules": {
+        "users": {
+            "$uid": {
+                ".read": "auth != null",
+                ".write": "auth != null && auth.uid === $uid"
+            }
+        },
+        "usernames": {
+            ".read": "auth != null",
+            "$username": {
+                ".write": "auth != null && (!data.exists() || data.val() === auth.uid)"
+            }
+        },
+        "contacts": {
+            "$uid": {
+                ".read": "auth != null && auth.uid === $uid",
+                ".write": "auth != null && auth.uid === $uid"
+            }
+        },
+        "chats": {
+            "$chatId": {
+                ".read": "auth != null && data.child('members').child(auth.uid).exists()",
+                ".write": "auth != null && (!data.exists() || data.child('members').child(auth.uid).exists())"
+            }
+        },
+        "messages": {
+            "$chatId": {
+                ".read": "auth != null && root.child('chats').child($chatId).child('members').child(auth.uid).exists()",
+                ".write": "auth != null && root.child('chats').child($chatId).child('members').child(auth.uid).exists()"
+            }
+        },
+        "status": {
+            "$uid": {
+                ".read": "auth != null",
+                ".write": "auth != null && auth.uid === $uid"
+            }
+        },
+        "connectionRequests": {
+            "incoming": {
+                "$uid": {
+                    ".read": "auth != null && auth.uid === $uid",
+                    "$senderId": {
+                        ".write": "auth != null && (auth.uid === $senderId || auth.uid === $uid)"
+                    }
+                }
+            },
+            "outgoing": {
+                "$uid": {
+                    ".read": "auth != null && auth.uid === $uid",
+                    "$recipientId": {
+                        ".write": "auth != null && (auth.uid === $uid || auth.uid === $recipientId)"
+                    }
+                }
+            }
+        },
+        "connections": {
+            "$uid": {
+                ".read": "auth != null && auth.uid === $uid",
+                "$friendId": {
+                    ".write": "auth != null && (auth.uid === $uid || auth.uid === $friendId)"
+                }
+            }
+        },
+        "publicKeys": {
+            "$uid": {
+                ".read": "auth != null",
+                ".write": "auth != null && auth.uid === $uid"
+            }
+        },
+        "presence": {
+            "$uid": {
+                ".read": "auth != null",
+                ".write": "auth != null && auth.uid === $uid"
+            }
+        },
+        "calls": {
+            ".read": "auth != null",
+            ".write": "auth != null"
+        }
+    }
+}

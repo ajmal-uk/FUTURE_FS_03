@@ -4,6 +4,7 @@ import { BrowserRouter } from "react-router-dom";
 import { AuthProvider } from "./context/AuthContext";
 import { CallProvider } from "./context/CallContext";
 import { ThemeProvider } from "./context/ThemeContext";
+import { EncryptionProvider } from "./context/EncryptionContext";
 import App from "./App";
 import "./styles/global.css";
 
@@ -12,12 +13,13 @@ createRoot(document.getElementById("root")).render(
     <BrowserRouter>
       <ThemeProvider>
         <AuthProvider>
-          <CallProvider>
-            <App />
-          </CallProvider>
+          <EncryptionProvider>
+            <CallProvider>
+              <App />
+            </CallProvider>
+          </EncryptionProvider>
         </AuthProvider>
       </ThemeProvider>
     </BrowserRouter>
   </StrictMode>
 );
-

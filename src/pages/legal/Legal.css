@@ -1,0 +1,156 @@
+/* Legal & Support Pages Styles */
+
+.legal-page {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    background: var(--color-bg-main);
+    overflow-y: auto;
+}
+
+.legal-header {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+    padding: var(--spacing-lg);
+    background: var(--color-bg-soft);
+    border-bottom: 1px solid var(--color-border);
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+.legal-header h1 {
+    font-size: var(--font-size-lg);
+    font-weight: 700;
+    color: var(--color-text-main);
+}
+
+.legal-content {
+    flex: 1;
+    margin: var(--spacing-xl);
+    padding: var(--spacing-xl);
+    max-width: 800px;
+    align-self: center;
+    width: 100%;
+}
+
+.legal-date {
+    font-size: var(--font-size-sm);
+    color: var(--color-text-muted);
+    margin-bottom: var(--spacing-xl);
+    font-style: italic;
+}
+
+.legal-section {
+    margin-bottom: var(--spacing-xl);
+}
+
+.legal-section h2 {
+    font-size: var(--font-size-lg);
+    font-weight: 600;
+    color: var(--color-text-main);
+    margin-bottom: var(--spacing-md);
+}
+
+.legal-section p,
+.legal-section ul {
+    font-size: var(--font-size-base);
+    color: var(--color-text-soft);
+    line-height: 1.6;
+}
+
+.legal-section ul {
+    list-style-type: disc;
+    padding-left: var(--spacing-lg);
+    margin-top: var(--spacing-md);
+}
+
+.legal-section li {
+    margin-bottom: var(--spacing-sm);
+}
+
+.legal-section a {
+    color: var(--color-primary);
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.legal-section a:hover {
+    text-decoration: underline;
+}
+
+/* Contact Card */
+.contact-card {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-lg);
+    padding: var(--spacing-lg);
+    background: var(--color-bg-card);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    margin-top: var(--spacing-lg);
+}
+
+.contact-icon {
+    width: 64px;
+    height: 64px;
+    background: var(--color-primary-soft);
+    border-radius: var(--radius-full);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--color-primary);
+}
+
+.contact-info h3 {
+    font-size: var(--font-size-base);
+    font-weight: 600;
+    color: var(--color-text-main);
+    margin-bottom: var(--spacing-xs);
+}
+
+.contact-email {
+    display: block;
+    font-size: var(--font-size-lg);
+    font-weight: 700 !important;
+    margin: var(--spacing-sm) 0;
+}
+
+.contact-note {
+    font-size: var(--font-size-xs) !important;
+    color: var(--color-text-muted) !important;
+}
+
+/* FAQ */
+.faq-item {
+    margin-bottom: var(--spacing-lg);
+    padding-bottom: var(--spacing-lg);
+    border-bottom: 1px solid var(--color-border-light);
+}
+
+.faq-item:last-child {
+    border-bottom: none;
+}
+
+.faq-item h3 {
+    font-size: var(--font-size-base);
+    font-weight: 600;
+    color: var(--color-text-main);
+    margin-bottom: var(--spacing-sm);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .legal-content {
+        margin: 0;
+        border-radius: 0;
+        padding: var(--spacing-lg);
+    }
+
+    .contact-card {
+        flex-direction: column;
+        text-align: center;
+        padding: var(--spacing-md);
+    }
+}

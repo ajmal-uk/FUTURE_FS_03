@@ -20,6 +20,12 @@ import StatusPage from "../pages/app/StatusPage";
 import CallsPage from "../pages/app/CallsPage";
 import SettingsPage from "../pages/app/SettingsPage";
 import UserSearchPage from "../pages/app/UserSearchPage";
+import AIChatPage from "../pages/app/AIChatPage";
+
+// Legal & Support pages
+import HelpPage from "../pages/support/HelpPage";
+import PrivacyPage from "../pages/legal/PrivacyPage";
+import TermsPage from "../pages/legal/TermsPage";
 
 // Admin pages
 import AdminDashboardPage from "../pages/admin/AdminDashboardPage";
@@ -33,6 +39,11 @@ const AppRouter = () => {
             <Route path="/" element={<LandingPage />} />
             <Route path="/features" element={<FeaturesPage />} />
             <Route path="/auth" element={<AuthPage />} />
+
+            {/* Legal public routes */}
+            <Route path="/privacy" element={<PrivacyPage />} />
+            <Route path="/terms" element={<TermsPage />} />
+            <Route path="/help" element={<HelpPage />} />
 
             {/* Protected app routes */}
             <Route
@@ -50,6 +61,7 @@ const AppRouter = () => {
                 <Route path="calls" element={<CallsPage />} />
                 <Route path="settings" element={<SettingsPage />} />
                 <Route path="search" element={<UserSearchPage />} />
+                <Route path="ai" element={<AIChatPage />} />
             </Route>
 
             {/* Admin routes */}

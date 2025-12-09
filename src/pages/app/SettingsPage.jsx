@@ -265,6 +265,37 @@ const SettingsPage = () => {
                     </section>
                 )}
 
+                {/* Help & Legal Section */}
+                <section className="settings-section">
+                    <h2 className="settings-section-title">Help & Legal</h2>
+                    <div className="settings-links">
+                        <button
+                            className="settings-link"
+                            onClick={() => navigate("/help")}
+                        >
+                            <span className="settings-link-icon">❓</span>
+                            <span className="settings-link-text">Help & Support</span>
+                            <span className="settings-link-arrow">→</span>
+                        </button>
+                        <button
+                            className="settings-link"
+                            onClick={() => navigate("/privacy")}
+                        >
+                            <span className="settings-link-icon">🔒</span>
+                            <span className="settings-link-text">Privacy Policy</span>
+                            <span className="settings-link-arrow">→</span>
+                        </button>
+                        <button
+                            className="settings-link"
+                            onClick={() => navigate("/terms")}
+                        >
+                            <span className="settings-link-icon">📄</span>
+                            <span className="settings-link-text">Terms of Service</span>
+                            <span className="settings-link-arrow">→</span>
+                        </button>
+                    </div>
+                </section>
+
                 {/* Account Section */}
                 <section className="settings-section">
                     <h2 className="settings-section-title">Account</h2>

@@ -654,3 +654,213 @@ export const getCallHistory = async (uid) => {
     calls.sort((a, b) => (b.startedAt || 0) - (a.startedAt || 0));
     return calls;
 };
+
+// ===================== Connection Requests =====================
+
+/**
+ * Send a connection request to another user
+ */
+export const sendConnectionRequest = async (fromUid, toUid) => {
+    const requestId = `${fromUid}_${toUid}`;
+    const requestRef = ref(rtdb, `connectionRequests/${requestId}`);
+
+    // Check if request already exists
+    const existingRequest = await get(requestRef);
+    if (existingRequest.exists()) {
+        throw new Error("Request already sent");
+    }
+
+    // Check if reverse request exists (they sent us a request)
+    const reverseRequestRef = ref(rtdb, `connectionRequests/${toUid}_${fromUid}`);
+    const reverseRequest = await get(reverseRequestRef);
+    if (reverseRequest.exists()) {
+        // Auto-accept if they already sent us a request
+        await acceptConnectionRequest(toUid, fromUid);
+        return "connected";
+    }
+
+    // Check if already connected
+    const existingConnection = await get(ref(rtdb, `connections/${fromUid}/${toUid}`));
+    if (existingConnection.exists()) {
+        throw new Error("Already connected");
+    }
+
+    await set(requestRef, {
+        fromUid,
+        toUid,
+        status: "pending",
+        createdAt: Date.now(),
+    });
+
+    return "sent";
+};
+
+/**
+ * Accept a connection request
+ */
+export const acceptConnectionRequest = async (fromUid, toUid) => {
+    const requestId = `${fromUid}_${toUid}`;
+    const requestRef = ref(rtdb, `connectionRequests/${requestId}`);
+
+    // Add to both users' connections
+    const updates = {};
+    updates[`connections/${fromUid}/${toUid}`] = { connectedAt: Date.now() };
+    updates[`connections/${toUid}/${fromUid}`] = { connectedAt: Date.now() };
+
+    await update(ref(rtdb), updates);
+
+    // Remove the request
+    await remove(requestRef);
+
+    return true;
+};
+
+/**
+ * Reject a connection request
+ */
+export const rejectConnectionRequest = async (fromUid, toUid) => {
+    const requestId = `${fromUid}_${toUid}`;
+    const requestRef = ref(rtdb, `connectionRequests/${requestId}`);
+    await remove(requestRef);
+    return true;
+};
+
+/**
+ * Cancel a sent connection request
+ */
+export const cancelConnectionRequest = async (fromUid, toUid) => {
+    const requestId = `${fromUid}_${toUid}`;
+    const requestRef = ref(rtdb, `connectionRequests/${requestId}`);
+    await remove(requestRef);
+    return true;
+};
+
+/**
+ * Get connection status between two users
+ */
+export const getConnectionStatus = async (uid1, uid2) => {
+    // Check if connected
+    const connectionRef = ref(rtdb, `connections/${uid1}/${uid2}`);
+    const connectionSnap = await get(connectionRef);
+    if (connectionSnap.exists()) {
+        return "connected";
+    }
+
+    // Check if request sent
+    const sentRequestRef = ref(rtdb, `connectionRequests/${uid1}_${uid2}`);
+    const sentRequestSnap = await get(sentRequestRef);
+    if (sentRequestSnap.exists()) {
+        return "pending_sent";
+    }
+
+    // Check if request received
+    const receivedRequestRef = ref(rtdb, `connectionRequests/${uid2}_${uid1}`);
+    const receivedRequestSnap = await get(receivedRequestRef);
+    if (receivedRequestSnap.exists()) {
+        return "pending_received";
+    }
+
+    return "none";
+};
+
+/**
+ * Subscribe to incoming connection requests
+ */
+export const subscribeToConnectionRequests = (uid, callback) => {
+    const requestsRef = ref(rtdb, "connectionRequests");
+
+    return onValue(requestsRef, async (snapshot) => {
+        const requests = [];
+
+        if (snapshot.exists()) {
+            const promises = [];
+
+            snapshot.forEach((child) => {
+                const request = child.val();
+                if (request.toUid === uid && request.status === "pending") {
+                    promises.push(
+                        (async () => {
+                            const fromUser = await getUser(request.fromUid);
+                            return { ...request, requestId: child.key, fromUser };
+                        })()
+                    );
+                }
+            });
+
+            const results = await Promise.all(promises);
+            requests.push(...results);
+        }
+
+        // Sort by createdAt desc
+        requests.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+        callback(requests);
+    });
+};
+
+/**
+ * Subscribe to user's connections
+ */
+export const subscribeToConnections = (uid, callback) => {
+    const connectionsRef = ref(rtdb, `connections/${uid}`);
+
+    return onValue(connectionsRef, async (snapshot) => {
+        const connections = [];
+
+        if (snapshot.exists()) {
+            const promises = [];
+
+            snapshot.forEach((child) => {
+                const connectedUid = child.key;
+                promises.push(
+                    (async () => {
+                        const user = await getUser(connectedUid);
+                        return { ...child.val(), uid: connectedUid, user };
+                    })()
+                );
+            });
+
+            const results = await Promise.all(promises);
+            connections.push(...results);
+        }
+
+        callback(connections);
+    });
+};
+
+/**
+ * Check if two users are connected
+ */
+export const areUsersConnected = async (uid1, uid2) => {
+    const connectionRef = ref(rtdb, `connections/${uid1}/${uid2}`);
+    const snapshot = await get(connectionRef);
+    return snapshot.exists();
+};
+
+/**
+ * Search users by username or display name
+ */
+export const searchUsers = async (query, currentUid) => {
+    const usersRef = ref(rtdb, "users");
+    const snapshot = await get(usersRef);
+    const results = [];
+
+    if (snapshot.exists()) {
+        const queryLower = query.toLowerCase();
+
+        snapshot.forEach((child) => {
+            const user = child.val();
+            if (user.uid === currentUid) return; // Skip self
+            if (user.isBanned) return; // Skip banned users
+
+            const usernameMatch = user.username?.toLowerCase().includes(queryLower);
+            const displayNameMatch = user.displayName?.toLowerCase().includes(queryLower);
+
+            if (usernameMatch || displayNameMatch) {
+                results.push(user);
+            }
+        });
+    }
+
+    return results.slice(0, 20); // Limit to 20 results
+};
+

@@ -140,6 +140,9 @@ const LandingPage = () => {
                     <div className="footer-links">
                         <Link to="/features">Features</Link>
                         <Link to="/auth">Sign In</Link>
+                        <Link to="/privacy">Privacy</Link>
+                        <Link to="/terms">Terms</Link>
+                        <Link to="/help">Help</Link>
                     </div>
                     <p className="footer-copyright">
                         © {new Date().getFullYear()} ZyChat. All rights reserved.

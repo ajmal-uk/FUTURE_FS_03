@@ -17,7 +17,11 @@ export const useAuth = () => {
 
 export const AuthProvider = ({ children }) => {
     const [currentUser, setCurrentUser] = useState(null);
-    const [userProfile, setUserProfile] = useState(null);
+    const [userProfile, setUserProfile] = useState(() => {
+        // Initial state from local storage for faster load
+        const saved = localStorage.getItem("zychat_user_profile");
+        return saved ? JSON.parse(saved) : null;
+    });
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
@@ -34,15 +38,19 @@ export const AuthProvider = ({ children }) => {
                     if (snapshot.exists()) {
                         const profile = snapshot.val();
                         setUserProfile(profile);
+                        // Cache profile
+                        localStorage.setItem("zychat_user_profile", JSON.stringify(profile));
 
                         // If user is banned, log them out
                         if (profile.isBanned) {
                             logoutUser();
                             setCurrentUser(null);
                             setUserProfile(null);
+                            localStorage.removeItem("zychat_user_profile");
                         }
                     } else {
                         setUserProfile(null);
+                        localStorage.removeItem("zychat_user_profile");
                     }
                     setLoading(false);
                 });
@@ -51,6 +59,7 @@ export const AuthProvider = ({ children }) => {
                 unsubscribePresence = setupPresence(user.uid);
             } else {
                 setUserProfile(null);
+                localStorage.removeItem("zychat_user_profile");
                 setLoading(false);
             }
         });
@@ -69,6 +78,7 @@ export const AuthProvider = ({ children }) => {
         await logoutUser();
         setCurrentUser(null);
         setUserProfile(null);
+        localStorage.removeItem("zychat_user_profile");
     };
 
     const value = {
@@ -76,7 +86,7 @@ export const AuthProvider = ({ children }) => {
         userProfile,
         loading,
         logout,
-        isAuthenticated: !!currentUser && !!userProfile,
+        isAuthenticated: !!currentUser && (!!userProfile || !!localStorage.getItem("zychat_user_profile")),
         isAdmin: userProfile?.role === "admin",
         isBanned: userProfile?.isBanned,
     };
@@ -87,5 +97,6 @@ export const AuthProvider = ({ children }) => {
         </AuthContext.Provider>
     );
 };
+
 
 export default AuthContext;
