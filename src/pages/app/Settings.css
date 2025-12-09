@@ -1,0 +1,206 @@
+/* Settings Page Styles */
+
+.settings-page {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    background: var(--color-bg-soft);
+    overflow-y: auto;
+}
+
+.settings-loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+}
+
+.settings-header {
+    padding: var(--spacing-lg);
+    border-bottom: 1px solid var(--color-border);
+}
+
+.settings-title {
+    font-size: var(--font-size-xl);
+    font-weight: 700;
+    color: var(--color-text-main);
+}
+
+.settings-content {
+    flex: 1;
+    padding: var(--spacing-lg);
+    max-width: 600px;
+}
+
+/* Sections */
+.settings-section {
+    margin-bottom: var(--spacing-xl);
+}
+
+.settings-section-title {
+    font-size: var(--font-size-sm);
+    font-weight: 600;
+    color: var(--color-text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: var(--spacing-md);
+}
+
+/* Profile Card */
+.profile-card {
+    padding: var(--spacing-xl);
+}
+
+.profile-avatar-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--spacing-md);
+    margin-bottom: var(--spacing-xl);
+}
+
+.profile-avatar-wrapper {
+    position: relative;
+}
+
+.avatar-uploading {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    border-radius: var(--radius-full);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.profile-info {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md);
+}
+
+.profile-field {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xs);
+}
+
+.profile-label {
+    font-size: var(--font-size-xs);
+    font-weight: 600;
+    color: var(--color-text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.profile-value {
+    font-size: var(--font-size-base);
+    color: var(--color-text-main);
+}
+
+.profile-actions {
+    display: flex;
+    gap: var(--spacing-md);
+    margin-top: var(--spacing-md);
+}
+
+/* Settings Links */
+.settings-links {
+    display: flex;
+    flex-direction: column;
+}
+
+.settings-link {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+    padding: var(--spacing-md);
+    background: var(--color-bg-card);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    text-align: left;
+    margin-bottom: var(--spacing-sm);
+}
+
+.settings-link:hover {
+    background: var(--color-bg-hover);
+}
+
+.settings-link.danger {
+    border-color: var(--color-danger-soft);
+}
+
+.settings-link.danger:hover {
+    background: var(--color-danger-soft);
+}
+
+.settings-link-icon {
+    font-size: 20px;
+}
+
+.settings-link-text {
+    flex: 1;
+    font-size: var(--font-size-base);
+    color: var(--color-text-main);
+}
+
+.settings-link-arrow {
+    color: var(--color-text-muted);
+}
+
+/* Theme Selector */
+.theme-selector {
+    padding: var(--spacing-lg);
+}
+
+.theme-label {
+    font-size: var(--font-size-sm);
+    font-weight: 600;
+    color: var(--color-text-muted);
+    margin-bottom: var(--spacing-md);
+}
+
+.theme-options {
+    display: flex;
+    gap: var(--spacing-md);
+}
+
+.theme-option {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--spacing-sm);
+    padding: var(--spacing-md);
+    background: var(--color-bg-card);
+    border: 2px solid var(--color-border);
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+
+.theme-option:hover {
+    background: var(--color-bg-hover);
+    border-color: var(--color-primary-soft);
+}
+
+.theme-option.active {
+    border-color: var(--color-primary);
+    background: var(--color-primary-soft);
+}
+
+.theme-option-icon {
+    font-size: 24px;
+}
+
+.theme-option-label {
+    font-size: var(--font-size-sm);
+    font-weight: 500;
+    color: var(--color-text-main);
+}
+
+.theme-option.active .theme-option-label {
+    color: var(--color-primary);
+}

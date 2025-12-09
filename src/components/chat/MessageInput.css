@@ -1,0 +1,122 @@
+/* Message Input Styles */
+
+.message-input-container {
+    position: relative;
+    padding: var(--spacing-md);
+    background: var(--color-bg-soft);
+    border-top: 1px solid var(--color-border);
+}
+
+.message-input-form {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+}
+
+.message-input-actions {
+    display: flex;
+    gap: 2px;
+}
+
+.message-input-actions .btn {
+    font-size: 18px;
+}
+
+.message-input {
+    flex: 1;
+    padding: var(--spacing-sm) var(--spacing-md);
+    font-size: var(--font-size-base);
+    color: var(--color-text-main);
+    background: var(--color-bg-card);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-full);
+    outline: none;
+    transition: border-color var(--transition-fast);
+}
+
+.message-input:focus {
+    border-color: var(--color-primary);
+}
+
+.message-input::placeholder {
+    color: var(--color-text-soft);
+}
+
+.message-send {
+    font-size: 18px;
+    width: 44px;
+    height: 44px;
+}
+
+/* Recording UI */
+.recording-ui {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-md);
+    padding: var(--spacing-sm);
+}
+
+.recording-indicator {
+    animation: pulse 1s infinite;
+}
+
+.recording-time {
+    font-size: var(--font-size-lg);
+    font-weight: 600;
+    color: var(--color-text-main);
+    min-width: 50px;
+}
+
+@media (max-width: 480px) {
+    .message-input-actions .btn:not(:first-child) {
+        display: none;
+    }
+}
+
+/* Error Toast */
+.message-input-error {
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--color-danger);
+    color: white;
+    padding: var(--spacing-sm) var(--spacing-md);
+    border-radius: var(--radius-md);
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+    margin-bottom: var(--spacing-sm);
+    font-size: var(--font-size-sm);
+    box-shadow: var(--shadow-lg);
+    animation: slideUp 0.3s ease;
+    max-width: calc(100% - 32px);
+    z-index: 10;
+}
+
+.message-input-error button {
+    background: none;
+    border: none;
+    color: white;
+    cursor: pointer;
+    font-size: 16px;
+    padding: 0;
+    opacity: 0.8;
+}
+
+.message-input-error button:hover {
+    opacity: 1;
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateX(-50%) translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+    }
+}

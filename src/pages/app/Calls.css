@@ -1,0 +1,71 @@
+/* Calls Page Styles */
+
+.calls-page {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    background: var(--color-bg-soft);
+}
+
+.calls-loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+}
+
+.calls-header {
+    padding: var(--spacing-lg);
+    border-bottom: 1px solid var(--color-border);
+}
+
+.calls-title {
+    font-size: var(--font-size-xl);
+    font-weight: 700;
+    color: var(--color-text-main);
+}
+
+/* Calls List */
+.calls-list {
+    flex: 1;
+    overflow-y: auto;
+}
+
+.call-item {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+    padding: var(--spacing-md) var(--spacing-lg);
+    border-bottom: 1px solid var(--color-border-soft);
+}
+
+.call-item-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.call-item-name {
+    font-weight: 600;
+    color: var(--color-text-main);
+}
+
+.call-item-details {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    font-size: var(--font-size-sm);
+    color: var(--color-text-muted);
+}
+
+.call-icon {
+    font-size: 14px;
+}
+
+.call-item-actions {
+    display: flex;
+    gap: var(--spacing-xs);
+}
+
+.call-item-actions .btn {
+    font-size: 18px;
+}

@@ -1,0 +1,22 @@
+/* App Layout Styles */
+
+.app-layout {
+    display: flex;
+    height: 100vh;
+    overflow: hidden;
+}
+
+.app-main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    background: var(--color-bg-main);
+}
+
+/* Mobile adjustments */
+@media (max-width: 768px) {
+    .app-layout {
+        padding-bottom: 60px;
+    }
+}

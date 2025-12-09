@@ -1,0 +1,29 @@
+/* Chats Page Styles */
+
+.chats-page {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    background: var(--color-bg-soft);
+}
+
+.chats-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--spacing-lg);
+    border-bottom: 1px solid var(--color-border);
+}
+
+.chats-title {
+    font-size: var(--font-size-xl);
+    font-weight: 700;
+    color: var(--color-text-main);
+}
+
+.chats-loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+}
