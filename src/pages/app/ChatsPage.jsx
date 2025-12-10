@@ -1,34 +1,19 @@
-// Chats Page - List of conversations
-import { useState, useEffect } from "react";
+// Chats Page - List of conversations (using cached data)
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "../../context/AuthContext";
-import { subscribeToChats } from "../../firebase/rtdbService";
+import { useData } from "../../context/DataContext";
 import ChatList from "../../components/chat/ChatList";
 import { Loader } from "../../components/common";
 import "./Chats.css";
 
 const ChatsPage = () => {
-    const [chats, setChats] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const { currentUser } = useAuth();
+    const { chats, chatsLoading } = useData();
     const navigate = useNavigate();
-
-    useEffect(() => {
-        if (!currentUser) return;
-
-        const unsubscribe = subscribeToChats(currentUser.uid, (chatList) => {
-            setChats(chatList);
-            setLoading(false);
-        });
-
-        return () => unsubscribe();
-    }, [currentUser]);
 
     const handleChatSelect = (chatId) => {
         navigate(`/app/chats/${chatId}`);
     };
 
-    if (loading) {
+    if (chatsLoading) {
         return (
             <div className="chats-loading">
                 <Loader size="lg" />

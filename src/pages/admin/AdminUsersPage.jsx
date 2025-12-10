@@ -2,7 +2,7 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { getAllUsers, banUser, unbanUser, updateUserProfile } from "../../firebase/rtdbService";
-import { Avatar, Loader, Modal } from "../../components/common";
+import { Avatar, Loader, Modal, SkeletonUserCard } from "../../components/common";
 import "./Admin.css";
 
 const AdminUsersPage = () => {
@@ -102,10 +102,26 @@ const AdminUsersPage = () => {
         });
     };
 
+    // Show skeleton loading instead of spinner
     if (loading) {
         return (
-            <div className="admin-loading">
-                <Loader size="lg" />
+            <div className="admin-page">
+                <header className="admin-header">
+                    <div className="admin-header-content">
+                        <Link to="/admin" className="admin-back">
+                            ← Back to Dashboard
+                        </Link>
+                        <h1 className="admin-title">User Management</h1>
+                        <p className="admin-subtitle">Loading users...</p>
+                    </div>
+                </header>
+                <div className="admin-content">
+                    <div className="users-list">
+                        {[1, 2, 3, 4, 5].map((i) => (
+                            <SkeletonUserCard key={i} />
+                        ))}
+                    </div>
+                </div>
             </div>
         );
     }
@@ -117,7 +133,7 @@ const AdminUsersPage = () => {
                     <Link to="/admin" className="admin-back">
                         ← Back to Dashboard
                     </Link>
-                    <h1 className="admin-title">Manage Users</h1>
+                    <h1 className="admin-title">User Management</h1>
                     <p className="admin-subtitle">{users.length} registered users</p>
                 </div>
             </header>
@@ -194,7 +210,15 @@ const AdminUsersPage = () => {
 
                     {filteredUsers.length === 0 && (
                         <div className="empty-state">
-                            <p className="empty-state-text">No users found</p>
+                            <div className="empty-state-icon">👥</div>
+                            <h3 className="empty-state-title">
+                                {users.length === 0 ? "No Users Registered Yet" : "No Users Found"}
+                            </h3>
+                            <p className="empty-state-text">
+                                {users.length === 0
+                                    ? "Users will appear here once they register for ZyChat."
+                                    : "Try adjusting your search or filter criteria."}
+                            </p>
                         </div>
                     )}
                 </div>

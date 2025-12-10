@@ -20,7 +20,7 @@ import StatusPage from "../pages/app/StatusPage";
 import CallsPage from "../pages/app/CallsPage";
 import SettingsPage from "../pages/app/SettingsPage";
 import UserSearchPage from "../pages/app/UserSearchPage";
-import AIChatPage from "../pages/app/AIChatPage";
+
 
 // Legal & Support pages
 import HelpPage from "../pages/support/HelpPage";
@@ -61,7 +61,7 @@ const AppRouter = () => {
                 <Route path="calls" element={<CallsPage />} />
                 <Route path="settings" element={<SettingsPage />} />
                 <Route path="search" element={<UserSearchPage />} />
-                <Route path="ai" element={<AIChatPage />} />
+
             </Route>
 
             {/* Admin routes */}

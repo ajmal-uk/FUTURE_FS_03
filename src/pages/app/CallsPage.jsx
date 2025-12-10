@@ -1,25 +1,30 @@
-// Calls Page - Call History
+// Calls Page - Call History (using cached data)
 import { useState, useEffect } from "react";
 import { useAuth } from "../../context/AuthContext";
 import { useCall } from "../../context/CallContext";
-import { getCallHistory, getUser } from "../../firebase/rtdbService";
+import { useData } from "../../context/DataContext";
+import { getUser } from "../../firebase/rtdbService";
 import { Avatar, Loader } from "../../components/common";
 import "./Calls.css";
 
 const CallsPage = () => {
     const { currentUser } = useAuth();
     const { startCall } = useCall();
-    const [calls, setCalls] = useState([]);
-    const [loading, setLoading] = useState(true);
+    const { callHistory, callsLoading, refreshCallHistory } = useData();
+    const [enrichedCalls, setEnrichedCalls] = useState([]);
+    const [enriching, setEnriching] = useState(true);
 
+    // Enrich calls with user data
     useEffect(() => {
-        if (!currentUser) return;
+        if (!currentUser || callsLoading || callHistory.length === 0) {
+            setEnrichedCalls([]);
+            setEnriching(false);
+            return;
+        }
 
-        const loadCalls = async () => {
-            const callHistory = await getCallHistory(currentUser.uid);
-
-            // Enrich with user data
-            const enrichedCalls = await Promise.all(
+        const enrichCalls = async () => {
+            setEnriching(true);
+            const enriched = await Promise.all(
                 callHistory.map(async (call) => {
                     const otherUid = call.callerId === currentUser.uid
                         ? call.calleeId
@@ -32,13 +37,12 @@ const CallsPage = () => {
                     };
                 })
             );
-
-            setCalls(enrichedCalls);
-            setLoading(false);
+            setEnrichedCalls(enriched);
+            setEnriching(false);
         };
 
-        loadCalls();
-    }, [currentUser]);
+        enrichCalls();
+    }, [currentUser, callHistory, callsLoading]);
 
     const formatTime = (timestamp) => {
         if (!timestamp) return "";
@@ -84,7 +88,7 @@ const CallsPage = () => {
         }
     };
 
-    if (loading) {
+    if (callsLoading || enriching) {
         return (
             <div className="calls-loading">
                 <Loader size="lg" />
@@ -98,7 +102,7 @@ const CallsPage = () => {
                 <h1 className="calls-title">Calls</h1>
             </header>
 
-            {calls.length === 0 ? (
+            {enrichedCalls.length === 0 ? (
                 <div className="empty-state">
                     <div className="empty-state-icon">📞</div>
                     <h3 className="empty-state-title">No call history</h3>
@@ -108,7 +112,7 @@ const CallsPage = () => {
                 </div>
             ) : (
                 <div className="calls-list">
-                    {calls.map((call) => (
+                    {enrichedCalls.map((call) => (
                         <div key={call.callId} className="call-item">
                             <Avatar
                                 src={call.otherUser?.avatarUrl}

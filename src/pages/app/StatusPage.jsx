@@ -8,8 +8,11 @@ import {
     getAllUsers,
 } from "../../firebase/rtdbService";
 import { uploadChatImage } from "../../services/cloudinaryService";
-import { Avatar, Loader, Modal } from "../../components/common";
+import { Avatar, Loader, Modal, SkeletonStatusItem } from "../../components/common";
 import "./Status.css";
+
+const CACHE_KEY = "zychat_status_cache";
+const CACHE_EXPIRY = 5 * 60 * 1000; // 5 minutes
 
 const StatusPage = () => {
     const { currentUser, userProfile } = useAuth();
@@ -23,34 +26,93 @@ const StatusPage = () => {
 
     const fileInputRef = useRef(null);
 
+    // Load cached data immediately
+    useEffect(() => {
+        try {
+            const cached = localStorage.getItem(CACHE_KEY);
+            if (cached) {
+                const { contactStatuses: cachedStatuses, timestamp } = JSON.parse(cached);
+                if (Date.now() - timestamp < CACHE_EXPIRY && cachedStatuses?.length > 0) {
+                    setContactStatuses(cachedStatuses);
+                    setLoading(false); // Show cached data immediately
+                }
+            }
+        } catch (e) {
+            // Ignore cache errors
+        }
+    }, []);
+
     // Load statuses
     useEffect(() => {
-        if (!currentUser) return;
+        if (!currentUser) {
+            setLoading(false);
+            return;
+        }
+
+        let unsubUsers = null;
+        let unsubStatus = null;
+        let isFirst = true;
 
         const loadData = async () => {
-            // Get my statuses
-            const statuses = await getUserStatuses(currentUser.uid);
-            setMyStatuses(statuses);
+            try {
+                // Get my statuses
+                const statuses = await getUserStatuses(currentUser.uid);
+                setMyStatuses(statuses);
 
-            // Get all users for contacts (simplified - in production, use contacts list)
-            const unsubscribe = getAllUsers((users) => {
-                const contactUids = users
-                    .filter((u) => u.uid !== currentUser.uid && !u.isBanned)
-                    .map((u) => u.uid);
+                // Get all users for contacts
+                unsubUsers = getAllUsers((users) => {
+                    const contactUids = users
+                        .filter((u) => u.uid !== currentUser.uid && !u.isBanned)
+                        .map((u) => u.uid);
 
-                // Subscribe to contact statuses
-                const unsubStatus = subscribeToContactStatuses(contactUids, (statuses) => {
-                    setContactStatuses(statuses);
-                    setLoading(false);
+                    // Clean up previous status subscription if exists
+                    if (unsubStatus) {
+                        unsubStatus();
+                        unsubStatus = null;
+                    }
+
+                    // If no contacts, set loading false immediately
+                    if (contactUids.length === 0) {
+                        setContactStatuses([]);
+                        setLoading(false);
+                        return;
+                    }
+
+                    // Subscribe to contact statuses
+                    unsubStatus = subscribeToContactStatuses(contactUids, (statuses) => {
+                        setContactStatuses(statuses);
+                        setLoading(false);
+
+                        // Cache the results
+                        try {
+                            localStorage.setItem(CACHE_KEY, JSON.stringify({
+                                contactStatuses: statuses,
+                                timestamp: Date.now()
+                            }));
+                        } catch (e) {
+                            // Ignore cache errors
+                        }
+                    });
                 });
 
-                return () => unsubStatus();
-            });
-
-            return () => unsubscribe();
+                // Quick timeout - only for first load without cache
+                if (isFirst) {
+                    setTimeout(() => setLoading(false), 800);
+                    isFirst = false;
+                }
+            } catch (error) {
+                console.error("Error loading statuses:", error);
+                setLoading(false);
+            }
         };
 
         loadData();
+
+        // Cleanup function
+        return () => {
+            if (unsubUsers) unsubUsers();
+            if (unsubStatus) unsubStatus();
+        };
     }, [currentUser]);
 
     const handleAddStatus = async (e) => {
@@ -98,8 +160,24 @@ const StatusPage = () => {
 
     if (loading) {
         return (
-            <div className="status-loading">
-                <Loader size="lg" />
+            <div className="status-page">
+                <header className="status-header">
+                    <h1 className="status-title">Status</h1>
+                </header>
+
+                <section className="status-section">
+                    <h2 className="status-section-title">My Status</h2>
+                    <SkeletonStatusItem />
+                </section>
+
+                <section className="status-section">
+                    <h2 className="status-section-title">Recent Updates</h2>
+                    <div className="status-list">
+                        {[1, 2, 3, 4].map((i) => (
+                            <SkeletonStatusItem key={i} />
+                        ))}
+                    </div>
+                </section>
             </div>
         );
     }

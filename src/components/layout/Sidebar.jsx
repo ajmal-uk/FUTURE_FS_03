@@ -2,7 +2,7 @@
 import { NavLink, useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import { Avatar } from "../common";
-import { IconMessageSquare, IconCircle, IconPhone, IconSearch, IconSettings, IconShield, IconLogOut, IconBot } from "../common/Icons";
+import { IconMessageSquare, IconCircle, IconPhone, IconSearch, IconSettings, IconShield, IconLogOut } from "../common/Icons";
 import "./Sidebar.css";
 
 const Sidebar = () => {
@@ -19,7 +19,7 @@ const Sidebar = () => {
         { path: "/app/status", icon: <IconCircle size={20} />, label: "Status" },
         { path: "/app/calls", icon: <IconPhone size={20} />, label: "Calls" },
         { path: "/app/search", icon: <IconSearch size={20} />, label: "Search" },
-        { path: "/app/ai", icon: <IconBot size={20} />, label: "ZyBot" },
+
         { path: "/app/settings", icon: <IconSettings size={20} />, label: "Settings" },
     ];
 

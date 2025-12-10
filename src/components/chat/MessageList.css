@@ -84,13 +84,30 @@
     word-break: break-word;
 }
 
+/* Message Footer with Time and Status */
+.message-footer {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 4px;
+    margin-top: 4px;
+    padding: 0 var(--spacing-xs);
+}
+
 .message-time {
-    display: block;
     font-size: 10px;
     opacity: 0.7;
-    margin-top: 4px;
-    text-align: right;
-    padding: 0 var(--spacing-xs);
+}
+
+.message-status {
+    display: flex;
+    align-items: center;
+    opacity: 0.8;
+}
+
+.message-status svg {
+    width: 14px;
+    height: 14px;
 }
 
 /* ============= Image Message - WhatsApp Style ============= */
@@ -140,14 +157,14 @@
 .message-audio-container {
     display: flex;
     align-items: center;
-    gap: var(--spacing-sm);
-    min-width: 250px;
-    padding: var(--spacing-sm);
+    gap: var(--spacing-md);
+    min-width: 280px;
+    padding: var(--spacing-sm) var(--spacing-md);
 }
 
 .audio-avatar {
-    width: 48px;
-    height: 48px;
+    width: 44px;
+    height: 44px;
     border-radius: var(--radius-full);
     background: var(--color-bg-card);
     display: flex;
@@ -160,57 +177,116 @@
     background: rgba(255, 255, 255, 0.2);
 }
 
-.audio-icon {
-    font-size: 24px;
+.audio-avatar svg {
+    opacity: 0.8;
 }
 
 .audio-content {
     flex: 1;
     display: flex;
-    flex-direction: column;
-    gap: 4px;
+    align-items: center;
+    gap: var(--spacing-sm);
     min-width: 0;
 }
 
-.message-audio {
-    width: 100%;
+.audio-play-btn {
+    width: 36px;
     height: 36px;
-    border-radius: var(--radius-md);
-}
-
-/* Custom audio styling */
-.message-audio::-webkit-media-controls-panel {
-    background: transparent;
-}
-
-.message.sent .message-audio::-webkit-media-controls-current-time-display,
-.message.sent .message-audio::-webkit-media-controls-time-remaining-display {
-    color: white;
-}
-
-/* Waveform visualization */
-.audio-waveform {
+    border-radius: var(--radius-full);
+    border: none;
+    background: var(--color-bg-card);
+    color: inherit;
+    cursor: pointer;
     display: flex;
     align-items: center;
-    gap: 2px;
-    height: 24px;
-    overflow: hidden;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: all 0.2s ease;
 }
 
-.waveform-bar {
-    width: 3px;
-    background: currentColor;
-    opacity: 0.5;
+.audio-play-btn:hover {
+    transform: scale(1.05);
+    background: var(--color-bg-hover);
+}
+
+.message.sent .audio-play-btn {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.message.sent .audio-play-btn:hover {
+    background: rgba(255, 255, 255, 0.3);
+}
+
+/* Audio Slider */
+.audio-slider-container {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    position: relative;
+    padding-right: var(--spacing-sm);
+    height: 20px;
+    /* Explicit height for alignment */
+    margin-top: -4px;
+    /* Slight visual adjustment */
+}
+
+.audio-slider {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 100%;
+    height: 4px;
+    background: rgba(0, 0, 0, 0.1);
     border-radius: 2px;
-    min-height: 4px;
+    outline: none;
+    cursor: pointer;
+    background-image: linear-gradient(to right, var(--color-primary), var(--color-primary));
+    background-repeat: no-repeat;
+    position: relative;
+    z-index: 2;
 }
 
-.message.sent .waveform-bar {
-    background: rgba(255, 255, 255, 0.6);
+.message.sent .audio-slider {
+    background: rgba(255, 255, 255, 0.3);
+    background-image: linear-gradient(to right, white, white);
 }
 
-.message.received .waveform-bar {
+/* Slider Thumb (Handle) */
+.audio-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    height: 12px;
+    width: 12px;
+    border-radius: 50%;
     background: var(--color-primary);
+    cursor: pointer;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+    transition: transform 0.1s;
+    border: 2px solid white;
+    /* Adding border for better visibility */
+}
+
+.message.sent .audio-slider::-webkit-slider-thumb {
+    background: white;
+    border-color: rgba(0, 0, 0, 0.1);
+}
+
+.audio-slider::-webkit-slider-thumb:hover {
+    transform: scale(1.2);
+}
+
+/* Audio Timer */
+.audio-timer {
+    font-size: 10px;
+    color: var(--color-text-muted);
+    font-variant-numeric: tabular-nums;
+    position: absolute;
+    top: 14px;
+    left: 0;
+    pointer-events: none;
+}
+
+.message.sent .audio-timer {
+    color: rgba(255, 255, 255, 0.8);
 }
 
 /* ============= File Message - WhatsApp Style ============= */

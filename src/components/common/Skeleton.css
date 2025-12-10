@@ -1,0 +1,103 @@
+/* Skeleton Component - CSS */
+.skeleton {
+    background: linear-gradient(90deg,
+            var(--color-bg-hover) 25%,
+            var(--color-bg-soft) 50%,
+            var(--color-bg-hover) 75%);
+    background-size: 200% 100%;
+    animation: skeleton-pulse 1.5s ease-in-out infinite;
+    border-radius: var(--radius-sm);
+}
+
+@keyframes skeleton-pulse {
+    0% {
+        background-position: 200% 0;
+    }
+
+    100% {
+        background-position: -200% 0;
+    }
+}
+
+/* Skeleton variants */
+.skeleton-text {
+    height: 14px;
+    width: 100%;
+}
+
+.skeleton-text.sm {
+    height: 12px;
+    width: 60%;
+}
+
+.skeleton-text.lg {
+    height: 18px;
+    width: 80%;
+}
+
+.skeleton-avatar {
+    border-radius: var(--radius-full);
+}
+
+.skeleton-avatar.sm {
+    width: 32px;
+    height: 32px;
+}
+
+.skeleton-avatar.md {
+    width: 40px;
+    height: 40px;
+}
+
+.skeleton-avatar.lg {
+    width: 48px;
+    height: 48px;
+}
+
+.skeleton-avatar.xl {
+    width: 64px;
+    height: 64px;
+}
+
+.skeleton-card {
+    padding: var(--spacing-lg);
+    background: var(--color-bg-card);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+}
+
+.skeleton-rect {
+    border-radius: var(--radius-md);
+}
+
+/* Skeleton groups for common patterns */
+.skeleton-user-card {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+    padding: var(--spacing-lg);
+    background: var(--color-bg-card);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    margin-bottom: var(--spacing-md);
+}
+
+.skeleton-user-card-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-sm);
+}
+
+.skeleton-status-item {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+    padding: var(--spacing-md);
+}
+
+.skeleton-status-info {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xs);
+}

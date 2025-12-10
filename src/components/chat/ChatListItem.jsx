@@ -1,6 +1,6 @@
 // Chat List Item Component
 import { useState, useEffect } from "react";
-import { ref, query, orderByChild, limitToLast, get } from "firebase/database";
+import { ref, query, orderByChild, limitToLast, onValue } from "firebase/database";
 import { rtdb } from "../../firebase/config";
 import { useAuth } from "../../context/AuthContext";
 import { getUser } from "../../firebase/rtdbService";
@@ -38,34 +38,38 @@ const ChatListItem = ({ chat, onClick }) => {
         }
     }, [chat, currentUser, otherUser]);
 
-    // Fetch last message if not available
+    // Subscribe to last message updates
     useEffect(() => {
-        const fetchLastMessage = async () => {
-            if (!lastMessage && chat.chatId) {
-                try {
-                    const messagesRef = query(
-                        ref(rtdb, `messages/${chat.chatId}`),
-                        orderByChild("createdAt"),
-                        limitToLast(1)
-                    );
-                    const snapshot = await get(messagesRef);
-                    if (snapshot.exists()) {
-                        snapshot.forEach((child) => {
-                            setLastMessage(child.val());
-                        });
-                    }
-                } catch (err) {
-                    console.error("Error fetching last message:", err);
-                }
-            }
-        };
-
+        // Always update from chat prop if available
         if (chat.lastMessage) {
             setLastMessage(chat.lastMessage);
-        } else {
-            fetchLastMessage();
         }
-    }, [chat, lastMessage]);
+    }, [chat.lastMessage]);
+
+    // Subscribe to real-time last message updates
+    useEffect(() => {
+        if (!chat.chatId) return;
+
+        const messagesRef = query(
+            ref(rtdb, `messages/${chat.chatId}`),
+            orderByChild("createdAt"),
+            limitToLast(1)
+        );
+
+        const unsubscribe = onValue(messagesRef, (snapshot) => {
+            if (snapshot.exists()) {
+                snapshot.forEach((child) => {
+                    setLastMessage(child.val());
+                });
+            } else {
+                setLastMessage(null); // No messages yet
+            }
+        }, (error) => {
+            console.error("Error subscribing to last message:", error);
+        });
+
+        return () => unsubscribe();
+    }, [chat.chatId]);
 
     // Format time
     const formatTime = (timestamp) => {

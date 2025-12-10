@@ -1,18 +1,24 @@
-// Settings Page with Theme Selection
+// Settings Page with Theme Selection, Storage & Security
 import { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import { useTheme } from "../../context/ThemeContext";
+import { useData } from "../../context/DataContext";
+import { useEncryption } from "../../context/EncryptionContext";
 import { updateUserProfile } from "../../firebase/rtdbService";
 import { uploadProfileImage } from "../../services/cloudinaryService";
 import { Avatar, Loader } from "../../components/common";
-import { IconShield, IconLogOut } from "../../components/common/Icons";
+import { IconShield, IconLogOut, IconLock, IconTrash, IconShieldCheck } from "../../components/common/Icons";
 import "./Settings.css";
 
 const SettingsPage = () => {
     const { userProfile, logout, isAdmin } = useAuth();
     const { theme, setTheme } = useTheme();
+    const { appSettings, updateSetting, clearCache, getCacheSize } = useData();
+    const { isInitialized: encryptionReady } = useEncryption();
     const navigate = useNavigate();
+
+    const [clearing, setClearing] = useState(false);
 
     const [editing, setEditing] = useState(false);
     const [saving, setSaving] = useState(false);
@@ -242,6 +248,79 @@ const SettingsPage = () => {
                                 <span className="theme-option-icon">🖥️</span>
                                 <span className="theme-option-label">System</span>
                             </button>
+                        </div>
+                    </div>
+                </section>
+
+                {/* Storage & Data Section */}
+                <section className="settings-section">
+                    <h2 className="settings-section-title">Storage & Data</h2>
+                    <div className="settings-card glass-card">
+                        {/* Image Compression Toggle */}
+                        <div className="settings-toggle-row">
+                            <div className="settings-toggle-info">
+                                <span className="settings-toggle-label">Compress Images</span>
+                                <span className="settings-toggle-desc">
+                                    Reduce image size before sending to save storage
+                                </span>
+                            </div>
+                            <button
+                                className={`toggle-switch ${appSettings.compressImages ? 'active' : ''}`}
+                                onClick={() => updateSetting('compressImages', !appSettings.compressImages)}
+                            >
+                                <span className="toggle-slider" />
+                            </button>
+                        </div>
+
+                        {/* Cache Info */}
+                        <div className="settings-info-row">
+                            <span className="settings-info-label">Cache Size</span>
+                            <span className="settings-info-value">{getCacheSize()} MB</span>
+                        </div>
+
+                        {/* Clear Cache Button */}
+                        <button
+                            className="btn btn-secondary settings-action-btn"
+                            onClick={() => {
+                                setClearing(true);
+                                clearCache();
+                                setTimeout(() => setClearing(false), 500);
+                            }}
+                            disabled={clearing}
+                        >
+                            <IconTrash size={18} />
+                            {clearing ? 'Clearing...' : 'Clear Cache'}
+                        </button>
+                    </div>
+                </section>
+
+                {/* Privacy & Security Section */}
+                <section className="settings-section">
+                    <h2 className="settings-section-title">Privacy & Security</h2>
+                    <div className="settings-card glass-card">
+                        {/* Encryption Status */}
+                        <div className="encryption-status">
+                            <div className="encryption-status-icon">
+                                {encryptionReady ? (
+                                    <IconShieldCheck size={32} />
+                                ) : (
+                                    <IconLock size={32} />
+                                )}
+                            </div>
+                            <div className="encryption-status-info">
+                                <h4 className="encryption-status-title">
+                                    {encryptionReady ? 'End-to-End Encryption Active' : 'Setting Up Encryption...'}
+                                </h4>
+                                <p className="encryption-status-desc">
+                                    Messages encrypted with AES-256-GCM + ECDH key exchange.
+                                </p>
+                            </div>
+                        </div>
+
+                        {/* Security Tips */}
+                        <div className="security-tips">
+                            <p><IconLock size={14} /> Private keys stored only on your device</p>
+                            <p><IconShieldCheck size={14} /> End-to-end encryption for all messages</p>
                         </div>
                     </div>
                 </section>

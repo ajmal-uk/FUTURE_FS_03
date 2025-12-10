@@ -65,6 +65,10 @@ export const getAllUsers = (callback) => {
             });
         }
         callback(users);
+    }, (error) => {
+        console.error("Error getting all users:", error);
+        // Call callback with empty array on error so loading stops
+        callback([]);
     });
 };
 

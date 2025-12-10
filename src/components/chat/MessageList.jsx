@@ -1,10 +1,12 @@
-// Message List Component - WhatsApp-style messages
-import { forwardRef, useState } from "react";
-import { IconFile, IconImage } from "../common/Icons";
+// Message List Component - WhatsApp-style messages with status indicators
+import { forwardRef, useState, useRef } from "react";
+import { IconFile, IconImage, IconClock, IconCheckSingle, IconCheckDouble, IconPlay, IconPause, IconMic } from "../common/Icons";
 import "./MessageList.css";
 
 const MessageList = forwardRef(({ messages, currentUserId }, ref) => {
     const [selectedImage, setSelectedImage] = useState(null);
+    const [playingAudio, setPlayingAudio] = useState(null);
+    const audioRefs = useRef({});
 
     const formatTime = (timestamp) => {
         if (!timestamp) return "";
@@ -32,6 +34,89 @@ const MessageList = forwardRef(({ messages, currentUserId }, ref) => {
         }
     };
 
+    // Handle audio play/pause
+    const [audioProgress, setAudioProgress] = useState(0);
+    const [audioDuration, setAudioDuration] = useState(0);
+    const [audioCurrentTime, setAudioCurrentTime] = useState(0);
+
+    // Handle audio play/pause
+    const handleAudioToggle = (messageId) => {
+        const audio = audioRefs.current[messageId];
+        if (!audio) return;
+
+        if (playingAudio === messageId) {
+            audio.pause();
+            setPlayingAudio(null);
+        } else {
+            // Pause any currently playing audio
+            if (playingAudio && audioRefs.current[playingAudio]) {
+                audioRefs.current[playingAudio].pause();
+                audioRefs.current[playingAudio].currentTime = 0; // Optional: reset others
+            }
+            audio.play();
+            setPlayingAudio(messageId);
+        }
+    };
+
+    const handleTimeUpdate = (e) => {
+        const audio = e.target;
+        if (audio.duration) {
+            const progress = (audio.currentTime / audio.duration) * 100;
+            setAudioProgress(progress);
+            setAudioCurrentTime(audio.currentTime);
+        }
+    };
+
+    const handleLoadedMetadata = (e) => {
+        const audio = e.target;
+        setAudioDuration(audio.duration);
+    };
+
+    const handleSeek = (e, messageId) => {
+        const audio = audioRefs.current[messageId];
+        if (!audio) return;
+
+        const newTime = (e.target.value / 100) * audio.duration;
+        audio.currentTime = newTime;
+        setAudioProgress(e.target.value);
+        setAudioCurrentTime(newTime);
+    };
+
+    // Handle audio ended
+    const handleAudioEnded = (messageId) => {
+        setPlayingAudio(null);
+        setAudioProgress(0);
+        setAudioCurrentTime(0);
+    };
+
+    // Format duration helper
+    const formatDuration = (time) => {
+        if (!time) return "0:00";
+        const minutes = Math.floor(time / 60);
+        const seconds = Math.floor(time % 60);
+        return `${minutes}:${seconds.toString().padStart(2, '0')}`;
+    };
+
+    // Render message status indicator (WhatsApp style)
+    const renderMessageStatus = (message, isSent) => {
+        if (!isSent) return null;
+
+        const status = message.status || "sent";
+
+        switch (status) {
+            case "sending":
+                return <IconClock size={14} />;
+            case "sent":
+                return <IconCheckSingle size={14} />;
+            case "delivered":
+                return <IconCheckDouble size={14} />;
+            case "read":
+                return <IconCheckDouble size={14} color="#53bdeb" />;
+            default:
+                return <IconCheckSingle size={14} />;
+        }
+    };
+
     // Group messages by date
     const groupedMessages = messages.reduce((groups, message) => {
         const date = formatDate(message.createdAt);
@@ -53,6 +138,8 @@ const MessageList = forwardRef(({ messages, currentUserId }, ref) => {
                 </div>
             );
         }
+
+        const isPlaying = playingAudio === message.messageId;
 
         return (
             <div
@@ -84,30 +171,47 @@ const MessageList = forwardRef(({ messages, currentUserId }, ref) => {
                         </div>
                     )}
 
-                    {/* Audio Message - WhatsApp Style with waveform */}
+                    {/* Audio Message - WhatsApp Style with Seekable Slider */}
                     {message.type === "audio" && (
                         <div className="message-audio-container">
                             <div className="audio-avatar">
-                                <div className="audio-icon">🎤</div>
+                                <IconMic size={24} />
                             </div>
                             <div className="audio-content">
-                                <audio
-                                    controls
-                                    src={message.mediaUrl}
-                                    className="message-audio"
-                                    preload="metadata"
+                                <button
+                                    className="audio-play-btn"
+                                    onClick={() => handleAudioToggle(message.messageId)}
                                 >
-                                    Your browser does not support audio.
-                                </audio>
-                                <div className="audio-waveform">
-                                    {[...Array(20)].map((_, i) => (
-                                        <span
-                                            key={i}
-                                            className="waveform-bar"
-                                            style={{ height: `${Math.random() * 100}%` }}
-                                        />
-                                    ))}
+                                    {isPlaying ? <IconPause size={20} /> : <IconPlay size={20} />}
+                                </button>
+
+                                <div className="audio-slider-container">
+                                    <input
+                                        type="range"
+                                        min="0"
+                                        max="100"
+                                        value={isPlaying ? audioProgress : 0}
+                                        onChange={(e) => handleSeek(e, message.messageId)}
+                                        className="audio-slider"
+                                        style={{
+                                            backgroundSize: `${isPlaying ? audioProgress : 0}% 100%`
+                                        }}
+                                    />
+                                    <div className="audio-timer">
+                                        {isPlaying
+                                            ? formatDuration(audioCurrentTime)
+                                            : formatDuration(audioDuration || 0)}
+                                    </div>
                                 </div>
+
+                                <audio
+                                    ref={el => audioRefs.current[message.messageId] = el}
+                                    src={message.mediaUrl}
+                                    onTimeUpdate={handleTimeUpdate}
+                                    onLoadedMetadata={handleLoadedMetadata}
+                                    onEnded={() => handleAudioEnded(message.messageId)}
+                                    style={{ display: 'none' }}
+                                />
                             </div>
                         </div>
                     )}
@@ -136,7 +240,15 @@ const MessageList = forwardRef(({ messages, currentUserId }, ref) => {
                         </a>
                     )}
 
-                    <span className="message-time">{formatTime(message.createdAt)}</span>
+                    {/* Message footer with time and status */}
+                    <div className="message-footer">
+                        <span className="message-time">{formatTime(message.createdAt)}</span>
+                        {isSent && (
+                            <span className="message-status">
+                                {renderMessageStatus(message, isSent)}
+                            </span>
+                        )}
+                    </div>
                 </div>
             </div>
         );
